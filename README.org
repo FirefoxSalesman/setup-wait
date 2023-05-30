@@ -1,0 +1,62 @@
+* setup-wait
+** What Does it Do?
+This package provides two setup macros: =:load-after= & =:defer-incrementally=, along with Doom Emac's incremental-defer functionality
+
+** Requirements
+The emacs package [[https://git.sr.ht/~pkal/setup][setup]]
+
+** Installation
+1. Place setup-wait.el somewhere in your load-path
+2. Put something like the following in your config
+   #+begin_src emacs-lisp
+     (require 'setup-wait)
+   #+end_src
+
+** Usage
+You can use =:load-after= & =:defer-incrementally= inside of the setup macro
+
+*** :defer-incrementally
+=:defer-incrementally= runs =doom-load-packages-incrementally= on the current package.
+Example:
+#+begin_src emacs-lisp
+  (setup dired
+    (:load-incrementally))
+#+end_src
+
+Some large packages, like Org Mode, are better off being broken up into sub-packages. When this is the case, just use the =doom-load-packages-incrementally= function
+#+begin_src emacs-lisp
+  (setup org
+      (doom-load-packages-incrementally '(calendar find-func format-spec org-macs org-compat org-faces org-entities org-list org-pcomplete org-src org-footnote org-macro ob org org-clock org-agenda org-capture)))
+#+end_src
+
+*** :load-after
+Load after causes the current package to be loaded after the specified package, or a list of packages.
+
+Example:
+#+begin_src emacs-lisp
+  (setup evil-collection
+    (:load-after evil))
+#+end_src
+
+This may come in handy when one incrementally deferred package depends on another
+
+#+begin_src emacs-lisp
+  (setup sage-shell-mode
+    (:defer-incrementally))
+
+  (setup ob-sagemath
+    (:defer-incrementally)
+    (:load-after sage-shell-mode))
+#+end_src
+
+** Credits
+The only part of this package that could be considered my own work is =:defer-incrementally=. Everything else is taken from these sources:
+
++ David Wilson: =:load-after=
+  https://github.com/daviwil/dotfiles/Emacs.org
+
++ Noctuid: Compiled all the relevant Doom Emacs functions in one place, & created the use-package version of =:incremental-defer= that I used for reference.
+  https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org
+
++ Hlissner: Original source of the relevant Doom Emacs functions, documentation for =doom-incremental-packages=
+  https://github.com/hlissner/doom-emacs/lisp/doom-start.el
